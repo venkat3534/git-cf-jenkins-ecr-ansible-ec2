@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git ''
+                git 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
             }
         }
 
@@ -41,4 +41,3 @@ pipeline {
         }
     }
 }
-
