@@ -8,7 +8,7 @@ pipeline {
         TEMPLATE_FILE = 'infra.yaml'
         JENKINS_INSTALL_SCRIPT = 'install-jenkins.sh'
         DOCKER_IMAGE = 'venkat/myapp:latest'
-        ECR_REPO = 'my-ecr-repo'
+        ECR_REPO = 'myapp'
     }
 
     stages {
