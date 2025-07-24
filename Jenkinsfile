@@ -2,42 +2,69 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "my-app-image"
-        ECR_REPO = "506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp"
-        AWS_REGION = "ap-south-1"
+        STACK_NAME = "my-ec2-stack"
+        REGION = "ap-south-1"
+        TEMPLATE_FILE = "ec2-setup.yaml"
+        INSTALL_SCRIPT = "setup-jenkins-ansible.sh"
+        KEY_NAME = "gvr"
     }
 
     stages {
-        stage('Clone Repo') {
+        stage('Checkout') {
             steps {
-                git 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
+                echo "Checking out code..."
+                checkout scm
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Deploy EC2 Stack') {
+            steps {
+                echo "Deploying EC2 using CloudFormation"
+                sh """
+                aws cloudformation deploy \
+                  --stack-name ${STACK_NAME} \
+                  --template-file ${TEMPLATE_FILE} \
+                  --capabilities CAPABILITY_NAMED_IAM \
+                  --parameter-overrides KeyName=${KEY_NAME} \
+                  --region ${REGION}
+                """
+            }
+        }
+
+        stage('Get Jenkins EC2 IP') {
             steps {
                 script {
-                    sh 'docker build -t $IMAGE_NAME .'
+                    def output = sh(script: """
+                        aws ec2 describe-instances \
+                          --filters "Name=tag:Name,Values=CICD-Server" \
+                          --query "Reservations[*].Instances[*].PublicIpAddress" \
+                          --region ${REGION} \
+                          --output text
+                    """, returnStdout: true).trim()
+
+                    env.JENKINS_IP = output
+                    echo "Jenkins EC2 IP: ${env.JENKINS_IP}"
                 }
             }
         }
 
-        stage('Tag & Push to ECR') {
+        stage('Install Jenkins & Ansible') {
             steps {
-                script {
-                    sh """
-                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
-                        docker tag $IMAGE_NAME:latest $ECR_REPO:latest
-                        docker push $ECR_REPO:latest
-                    """
-                }
+                echo "Installing Jenkins and Ansible on Jenkins EC2"
+                sh """
+                chmod +x ${INSTALL_SCRIPT}
+                ssh -o StrictHostKeyChecking=no -i ~/.ssh/${KEY_NAME}.pem ec2-user@${env.JENKINS_IP} 'bash -s' < ${INSTALL_SCRIPT}
+                """
             }
         }
+    }
 
-        stage('Deploy using Ansible') {
-            steps {
-                sh 'ansible-playbook -i inventory.ini deploy_app.yml'
-            }
+    post {
+        success {
+            echo "✅ Infrastructure & Jenkins setup complete!"
+        }
+        failure {
+            echo "❌ Pipeline failed. Check logs for more details."
         }
     }
 }
