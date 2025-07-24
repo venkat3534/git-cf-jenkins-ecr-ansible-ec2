@@ -9,8 +9,7 @@ pipeline {
 
        stage('Checkout Code') {
            steps {
-               git branch: 'main', // Replace 'main' with your actual branch name
-                url: 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
+               git 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
            }
         }
 
