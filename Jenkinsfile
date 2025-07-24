@@ -37,5 +37,4 @@ pipeline {
                 sh 'ansible-playbook -i hosts deploy_app.yml'
             }
         }
-    }
 }
