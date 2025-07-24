@@ -7,11 +7,11 @@ pipeline {
         AWS_REGION = 'ap-south-1'
     }
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                git 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
-            }
+       stage('Checkout Code') {
+           steps {
+               git branch: 'main', // Replace 'main' with your actual branch name
+                url: 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
+           }
         }
 
         stage('Build Docker Image') {
