@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Provision 2 EC2s (Jenkins + App Server) with Security Groups
+
+Parameters:
+  KeyName:
+    Description: EC2 KeyPair for SSH
+    Type: AWS::EC2::KeyPair::KeyName
+
+Resources:
+  CICDSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow Jenkins + SSH
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  AppSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow App traffic + SSH
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  CICDEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      SecurityGroups: [!Ref CICDSG]
+      ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 (update if needed)
+      Tags:
+        - Key: Name
+          Value: Jenkins-Server
+
+  AppEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      SecurityGroups: [!Ref AppSG]
+      ImageId: ami-0c02fb55956c7d316
+      Tags:
+        - Key: Name
+          Value: App-Server
+
+Outputs:
+  JenkinsPublicIP:
+    Value: !GetAtt CICDEC2.PublicIp
+
+  AppPublicIP:
+    Value: !GetAtt AppEC2.PublicIp

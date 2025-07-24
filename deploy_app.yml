@@ -1,0 +1,34 @@
+---
+- name: Deploy App to EC2
+  hosts: app
+  become: yes
+  tasks:
+    - name: Install Docker
+      amazon.aws.ec2_metadata_facts: {}
+    - name: Ensure Docker is installed
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Authenticate Docker with ECR
+      shell: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+
+    - name: Pull Docker Image from ECR
+      shell: docker pull 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+
+    - name: Stop old container if running
+      shell: |
+        docker stop my-app || true
+        docker rm my-app || true
+
+    - name: Run new container
+      shell: |
+        docker run -d --name my-app -p 80:80 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+

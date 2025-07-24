@@ -1,0 +1,4 @@
+# Replace <AppPublicIP> with the IP of App server from CloudFormation Output
+[app]
+ec2-user@<AppPublicIP> ansible_ssh_private_key_file=~/.ssh/your-key.pem ansible_user=ec2-user
+
