@@ -11,9 +11,9 @@ pipeline {
 
     stages {
         stage('Checkout Code') {
-            steps {
-                git 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
-            }
+           steps {
+               git branch: 'main', url: 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
+           }
         }
 
         stage('Build Docker Image') {
