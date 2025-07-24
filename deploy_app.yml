@@ -18,10 +18,10 @@
 
     - name: Authenticate Docker with ECR
       shell: |
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp
 
     - name: Pull Docker Image from ECR
-      shell: docker pull 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+      shell: docker pull 506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp
 
     - name: Stop old container if running
       shell: |
@@ -30,5 +30,4 @@
 
     - name: Run new container
       shell: |
-        docker run -d --name my-app -p 80:80 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
-
+        docker run -d --name my-app -p 80:80 506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp
