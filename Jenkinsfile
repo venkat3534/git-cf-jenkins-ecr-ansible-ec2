@@ -2,15 +2,18 @@ pipeline {
     agent any
 
     environment {
-        ECR_REPO = '506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp:latest'
-        IMAGE_NAME = 'myapp'
+        AWS_ACCOUNT_ID = '506115906214'
         AWS_REGION = 'ap-south-1'
+        IMAGE_NAME = 'myapp'
+        ECR_REPO_NAME = 'myapp'
+        ECR_REPO_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
     }
 
-       stage('Checkout Code') {
-           steps {
-               git 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
-           }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
+            }
         }
 
         stage('Build Docker Image') {
@@ -21,14 +24,14 @@ pipeline {
 
         stage('Login to ECR') {
             steps {
-                sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO'
+                sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI'
             }
         }
 
-        stage('Push Image to ECR') {
+        stage('Tag & Push Image to ECR') {
             steps {
-                sh 'docker tag $IMAGE_NAME:latest $ECR_REPO/$IMAGE_NAME:latest'
-                sh 'docker push $ECR_REPO/$IMAGE_NAME:latest'
+                sh 'docker tag $IMAGE_NAME:latest $ECR_REPO_URI:latest'
+                sh 'docker push $ECR_REPO_URI:latest'
             }
         }
 
@@ -37,4 +40,5 @@ pipeline {
                 sh 'ansible-playbook -i hosts deploy_app.yml'
             }
         }
+    }
 }
