@@ -7,7 +7,7 @@ pipeline {
         IMAGE_NAME = 'myimage'
         ECR_REPO_NAME = 'myapp'
         ECR_REPO_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
-        AWS-CREDENTIALS = credentials('aws-credentials') // Reference Jenkins credentials
+        AWS_CREDENTIALS = credentials('aws-credentials') // Reference Jenkins credentials
     }
 
     stages {
