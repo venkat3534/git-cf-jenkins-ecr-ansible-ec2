@@ -21,6 +21,15 @@ pipeline {
                 sh 'docker build -t $IMAGE_NAME .'
             }
         }
+        
+        stage('Create ECR Repository (if not exists)') {
+            steps {
+                sh '''
+                aws ecr describe-repositories --repository-names myapp --region $AWS_REGION || \
+                aws ecr create-repository --repository-name myapp --region $AWS_REGION
+                '''
+            }
+        }
 
         stage('Login to ECR') {
             steps {
