@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'ansible-node' }
 
     environment {
         AWS_ACCOUNT_ID = '506115906214'
