@@ -10,11 +10,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
-           steps {
-               git branch: 'main', url: 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
-           }
-        }
         stage('Deploy to App Server') {
             steps {
                 sh '''
