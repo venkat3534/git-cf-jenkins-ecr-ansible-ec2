@@ -7,7 +7,6 @@ pipeline {
         IMAGE_NAME = 'myimage'
         ECR_REPO_NAME = 'myapp'
         ECR_REPO_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
-        AWS_CREDENTIALS = credentials('aws-credentials') // Reference Jenkins credentials
     }
 
     stages {
@@ -42,12 +41,6 @@ pipeline {
             steps {
                 sh 'docker tag $IMAGE_NAME:latest $ECR_REPO_URI:latest'
                 sh 'docker push $ECR_REPO_URI:latest'
-            }
-        }
-
-        stage('Deploy with Ansible') {
-            steps {
-                sh 'ansible-playbook -i hosts deploy_app.yml'
             }
         }
     }
