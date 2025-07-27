@@ -44,6 +44,8 @@ sudo docker run -d \
 
 echo " Waiting 30 seconds for Jenkins to initialize..."
 sleep 30
+echo " Currently running containers..."
+sudo docker ps -a
 
 # Get public IP using external service
 PUBLIC_IP=$(curl -s ifconfig.io)
