@@ -1,26 +1,49 @@
 pipeline {
- agent { label 'cicd-server' } // Ensure this runs on the CICD server
+    agent { label 'app-server' }
 
- environment {
-     IMAGE_NAME = 'myapp'
-     AWS_REGION = 'ap-south-1'
-     ECR_REPO_URI = '506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp'
- }
+    environment {
+        AWS_ACCOUNT_ID = '506115906214'
+        AWS_REGION = 'ap-south-1'
+        IMAGE_NAME = 'myimage'
+        ECR_REPO_NAME = 'myapp'
+        ECR_REPO_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
+    }
 
- stages {
-     stage('Checkout Code') {
-         steps {
-             git branch: 'main', url: 'https://github.com/your-repo.git'
-         }
-     }
+    stages {
+        stage('Checkout Code') {
+           steps {
+               git branch: 'main', url: 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
+           }
+        }
 
-     stage('Run Ansible Playbook') {
-         steps {
-             sh '''
-             # Run the Ansible playbook to deploy the application
-             ansible-playbook -i hosts deploy_app.yml
-             '''
-         }
-     }
- }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+        
+        stage('Create ECR Repository (if not exists)') {
+            steps {
+                sh '''
+                aws ecr describe-repositories --repository-names myapp --region $AWS_REGION || \
+                aws ecr create-repository --repository-name myapp --region $AWS_REGION
+                '''
+            }
+        }
+
+        stage('Login to ECR') {
+            steps {
+                sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI'
+            }
+        }
+
+        stage('Run Ansible Playbook') {
+            steps {
+                sh '''
+                # Run the Ansible playbook to deploy the application
+                ansible-playbook -i hosts deploy_app.yml
+                '''
+            }
+        }
+    }
 }
