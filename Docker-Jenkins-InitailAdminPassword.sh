@@ -14,7 +14,7 @@ sudo ansible --version
 echo " Installing the amazon.aws collection, which provides Ansible modules and plugins for managing AWS resources..."
 sudo ansible-galaxy collection install amazon.aws
 
-echo " python is teh underlying runtime env of ansible..."
+echo " python is technology underlying runtime env of ansible..."
 sudo yum install python3-pip -y
 
 echo " Installing Python libraries for interacting with AWS services..."
