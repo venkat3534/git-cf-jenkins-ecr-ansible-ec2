@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'ansible-node' }
+    agent any
 
     environment {
         AWS_ACCOUNT_ID = '506115906214'
@@ -15,35 +15,19 @@ pipeline {
                git branch: 'main', url: 'https://github.com/venkat3534/git-cf-jenkins-ecr-ansible-ec2.git'
            }
         }
-
-        stage('Build Docker Image') {
+        stage('Deploy to App Server') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
-            }
-        }
-        
-        stage('Create ECR Repository (if not exists)') {
-            steps {
-                sh '''
-                aws ecr describe-repositories --repository-names myapp --region $AWS_REGION || \
-                aws ecr create-repository --repository-name myapp --region $AWS_REGION
-                '''
-            }
-        }
-
-        stage('Login to ECR') {
-            steps {
-                sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI'
-            }
-        }
-
-        stage('Run Ansible Playbook') {
-            steps {
-                sh '''
-                # Run the Ansible playbook to deploy the application
+               sh '''
+                ssh ec2-user@$APP_SERVER_IP << EOF
                 ansible-playbook -i hosts deploy_app.yml
-                '''
-            }
-        }
+                aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
+                docker pull $ECR_REPO_URI:latest
+                docker stop myapp || true
+                docker rm myapp || true
+                docker run -d --name myapp -p 80:80 $ECR_REPO_URI:latest
+                EOF
+               '''
+             }
+         }
     }
 }
