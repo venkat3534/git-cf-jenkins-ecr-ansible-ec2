@@ -17,16 +17,9 @@ pipeline {
         }
         stage('Deploy to App Server') {
             steps {
-               sh '''
-                ssh ec2-user@$APP_SERVER_IP << EOF
+                sh '''
                 ansible-playbook -i hosts deploy_app.yml
-                aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
-                docker pull $ECR_REPO_URI:latest
-                docker stop myapp || true
-                docker rm myapp || true
-                docker run -d --name myapp -p 80:80 $ECR_REPO_URI:latest
-                EOF
-               '''
+                '''
              }
          }
     }
