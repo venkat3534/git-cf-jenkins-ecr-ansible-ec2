@@ -1,4 +1,4 @@
-# 🚀 Ansible + AWS EC2 + Jenkins CI/CD Automation
+# 🚀 Ansible + AWS EC2 + ECR Jenkins CI/CD Automation
 
 This repository demonstrates how to automate the creation of an AWS EC2 Instance and S3 bucket using **Ansible**, managed through a **Jenkins CI/CD pipeline**, with infrastructure defined as code.
 
@@ -6,7 +6,7 @@ This repository demonstrates how to automate the creation of an AWS EC2 Instance
 
 ## 🔧 Tech Stack
 - 🧰 Ansible
-- ☁️ Amazon Web Services (S3)
+- ☁️ Amazon Web Services (ECR)
 - 🚀 AWS EC2 Instance
 - 🛠️ Jenkins
 - 🗃️ GitHub (SCM)
@@ -15,7 +15,7 @@ This repository demonstrates how to automate the creation of an AWS EC2 Instance
 
 ## 📌 Objective
 
-✅ Automate the creation of an AWS S3 bucket and AWS EC2 Instance
+✅ Automate the creation of an AWS EC2 Instance and ECR
 ✅ Store Ansible playbooks in GitHub  
 ✅ Trigger a Jenkins CI/CD job to deploy the playbook  
 ✅ Use Jenkins IAM Role for secure AWS access  
@@ -27,13 +27,13 @@ This repository demonstrates how to automate the creation of an AWS EC2 Instance
 - EC2 instance is launched to act as the Jenkins master and Ansible control node.
 - Jenkins is deployed using Docker via `Docker-Jenkins-InitialAdminPassword.sh`.
 - Ansible is installed and configured with AWS credentials for infrastructure automation.
-- Jenkins pipelines (for EC2 and S3 provisioning) are defined using Jenkinsfiles and run on this EC2 instance as a slave node.
+- Jenkins pipelines (for EC2) are defined using Jenkinsfiles and run on this EC2 instance as a slave node.
 
 ---
 
 ## ✅ Prerequisites
 
-- AWS IAM user with EC2 & S3 full access for AWS Access Keys.
+- AWS IAM user with EC2 & Ecr full access for AWS Access Keys.
 - Proper AWS credentials are configured on the EC2 instance.
 - Jenkins Docker container running.
 - Ansible and Boto3 installed on the EC2 instance:
