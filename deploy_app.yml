@@ -30,4 +30,4 @@
 
     - name: Run new container
       shell: |
-        docker run -d --name my-app -p 80:80 506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp
+        docker run -d --name my-app -p 5000:5000 506115906214.dkr.ecr.ap-south-1.amazonaws.com/myapp
