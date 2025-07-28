@@ -1,4 +1,4 @@
-# 🚀 Ansible + AWS EC2 & S3 + Jenkins CI/CD Automation
+# 🚀 Ansible + AWS EC2 + Jenkins CI/CD Automation
 
 This repository demonstrates how to automate the creation of an AWS EC2 Instance and S3 bucket using **Ansible**, managed through a **Jenkins CI/CD pipeline**, with infrastructure defined as code.
 
