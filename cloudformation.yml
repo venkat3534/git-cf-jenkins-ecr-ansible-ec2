@@ -27,8 +27,8 @@ Resources:
       GroupDescription: Allow App traffic + SSH
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          FromPort: 5000
+          ToPort: 5000
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 22
@@ -38,7 +38,7 @@ Resources:
   CICDEC2:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
+      InstanceType: c7i-flex.large
       KeyName: !Ref KeyName
       SecurityGroups: [!Ref CICDSG]
       ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 (update if needed)
@@ -49,7 +49,7 @@ Resources:
   AppEC2:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
+      InstanceType: t3.micro
       KeyName: !Ref KeyName
       SecurityGroups: [!Ref AppSG]
       ImageId: ami-0c02fb55956c7d316
